@@ -11,6 +11,10 @@ Visit https://snipr.kushs.dev
 - RESTful API
 - Modern web interface
 
+## Special Thanks
+
+We extend our sincere gratitude to facedev for developing an independent search engine "vyntr" and letting us use the api for its data!
+
 ## Contributing
 
 Contributions are welcome! Please open issues or submit pull requests.
