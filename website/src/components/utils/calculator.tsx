@@ -115,7 +115,6 @@ export const ScientificCalculator: React.FC<{ searchQuery: string }> = ({
         onKeyDown={handleInputKeyDown}
         style={{ marginBottom: 16, fontSize: 20, textAlign: "right" }}
         aria-label="Calculator input"
-        autoFocus
       />
       <div
         style={{
