@@ -1,28 +1,40 @@
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Input } from "./components/ui/input";
 import { FaGlobe, FaSearch } from "react-icons/fa";
-import { useEffect } from "react";
 import { DarkModeSwitch } from "react-toggle-dark-mode";
+import { TimerWidget, parseTimerQuery } from "./components/utils/timer";
+import WordMeaningCard from "./components/utils/word";
+import { isCurrencyConversion, getSuggestions } from "./searchUtils";
+
+import CurrencyCard from "./components/utils/currency";
+import ScientificCalculator from "./components/utils/calculator";
+
 type SearchResult = {
   id: number;
   name: string;
   description: string;
   url: string;
 };
+
 function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [searching, setSearching] = useState(false);
   const [searchingText, setSearchingText] = useState("Searching...");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const search = async () => {
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const timerSeconds = parseTimerQuery(searchQuery);
+
+  const search = async (query?: string) => {
     setSearching(true);
     try {
+      const q = encodeURIComponent(query ?? searchQuery);
       const resp = await fetch(
-        `https://snipr-iota.vercel.app/api/search?q=${encodeURIComponent(
-          searchQuery
-        )}`
+        `https://snipr-iota.vercel.app/api/search?q=${encodeURIComponent(q)}`
       );
       if (!resp.ok) {
         throw new Error(`HTTP error! status: ${resp.status}`);
@@ -34,10 +46,28 @@ function App() {
       }
     } catch (error) {
       setSearchResults([]);
-      // Optionally, you can show an error message to the user here
       console.error("Fetch error:", error);
     }
   };
+
+  useEffect(() => {
+    let ignore = false;
+    if (searchQuery.trim() === "") {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+    getSuggestions(searchQuery).then((sugs) => {
+      if (!ignore) {
+        setSuggestions(sugs || []);
+        setShowSuggestions((sugs && sugs.length > 0) || false);
+      }
+    });
+    return () => {
+      ignore = true;
+    };
+  }, [searchQuery]);
+
   useEffect(() => {
     const stored = localStorage.getItem("darkMode");
     if (stored === "true") {
@@ -61,6 +91,21 @@ function App() {
       localStorage.setItem("darkMode", "false");
     }
   }, [darkMode]);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (inputRef.current && !inputRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+    if (showSuggestions) {
+      document.addEventListener("mousedown", handleClick);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+    };
+  }, [showSuggestions]);
+
   return (
     <div className="flex min-h-screen w-screen flex-col items-center justify-center">
       <div className="fixed top-8 right-8 font-sans scale-150 z-[60]">
@@ -76,8 +121,8 @@ function App() {
         />
       </div>
       <h1
-        id="logo"
         className="font-bold top-4 left-4 cursor-pointer"
+        id={searching ? "searching-logo" : "logo"}
         onClick={() => {
           window.location.href = "/";
         }}
@@ -90,7 +135,7 @@ function App() {
       </h1>
       {!searching && <em className="mb-8">The Modern Search Engine</em>}
       <div
-        className="flex w-3/4 md:w-1/2 items-center justify-between rounded-lg p-4 shadow-lg flex-row z-50 bg-background"
+        className="flex w-3/4 md:w-1/2 items-center justify-between rounded-lg p-4 shadow-accent border-accent border-[0.1px] shadow-2xl flex-row z-50 bg-background relative"
         style={{
           position: searching ? "fixed" : "static",
           top: searching ? "3rem" : "auto",
@@ -99,27 +144,103 @@ function App() {
         }}
         id="search-bar"
       >
-        <Input
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
+        <div className="w-full relative">
+          <Input
+            ref={inputRef}
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setShowSuggestions(true);
+            }}
+            onFocus={() => {
+              if (suggestions.length > 0) setShowSuggestions(true);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && searchQuery.trim() !== "") {
+                search();
+                setShowSuggestions(false);
+              }
+              if (e.key === "ArrowDown" && suggestions.length > 0) {
+                const el = document.getElementById("suggestion-0");
+                if (el) (el as HTMLElement).focus();
+              }
+            }}
+            id="search-input"
+            placeholder="Type something..."
+            autoComplete="off"
+          />
+          {showSuggestions && suggestions.length > 0 && (
+            <ul className="absolute left-0 right-0 mt-1 bg-background border border-accent rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
+              {suggestions.map((s, i) => (
+                <li
+                  key={i}
+                  id={`suggestion-${i}`}
+                  tabIndex={0}
+                  className="px-4 py-2 cursor-pointer hover:bg-accent"
+                  onMouseDown={() => {
+                    setSearchQuery(s);
+                    setShowSuggestions(false);
+                    search(s);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      setSearchQuery(s);
+                      setShowSuggestions(false);
+                      search(s);
+                    }
+                    if (e.key === "ArrowDown") {
+                      const next = document.getElementById(
+                        `suggestion-${i + 1}`
+                      );
+                      if (next) (next as HTMLElement).focus();
+                    }
+                    if (e.key === "ArrowUp") {
+                      if (i === 0) {
+                        inputRef.current?.focus();
+                      } else {
+                        const prev = document.getElementById(
+                          `suggestion-${i - 1}`
+                        );
+                        if (prev) (prev as HTMLElement).focus();
+                      }
+                    }
+                  }}
+                >
+                  {s}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <Button
+          onClick={() => {
+            search();
+            setShowSuggestions(false);
           }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              search();
-            }
-          }}
-          id="search-input"
-          placeholder="Type something..."
-        />
-        <Button onClick={search} id="search-button">
+          id="search-button"
+        >
           <FaSearch />
         </Button>
       </div>
-      <div>
-        {searching && searchResults.length === 0 && (
-          <div className="text-gray-500">{searchingText}</div>
+      <div className="pt-24">
+        {searching && searchQuery && timerSeconds !== null && (
+          <TimerWidget seconds={timerSeconds} />
         )}
-        {searchResults.length > 0 && (
+        {searching && searchQuery && (
+          <>
+            <CurrencyCard sText={setSearchingText} searchQuery={searchQuery} />
+            <ScientificCalculator searchQuery={searchQuery} />
+            <WordMeaningCard searchQuery={searchQuery} />
+          </>
+        )}
+        {searching &&
+          searchQuery &&
+          searchResults.length === 0 &&
+          !isCurrencyConversion(searchingText) &&
+          timerSeconds === null && (
+            <div className="text-gray-500 text-center">{searchingText}</div>
+          )}
+        {searchQuery && searchResults.length > 0 && (
           <div className="mt-20">
             <h2 className="px-3 mt-4 text-2xl font-bold mb-4">
               We found the following results:
@@ -128,7 +249,7 @@ function App() {
               {searchResults.map((result) => (
                 <div
                   key={result.id}
-                  className="w-full max-w-2xl bg-background p-4 mb-4 rounded-lg shadow-md"
+                  className="w-full max-w-2xl bg-background p-4 mb-4 rounded-lg shadow-accent border-accent border-[0.1px] shadow-md"
                 >
                   <p className="text-md text-gray-500 dark:text-gray-400 flex flex-row items-center gap-2">
                     <FaGlobe />{" "}
