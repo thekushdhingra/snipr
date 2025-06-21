@@ -1,7 +1,5 @@
 import { getMeanings } from "@/searchUtils";
-import React, { useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 
 function WordMeaningCard({ searchQuery }: { searchQuery: string }) {
   const [meanings, setMeanings] = useState<string[] | null>(null);
