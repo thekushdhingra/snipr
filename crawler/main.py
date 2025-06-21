@@ -41,53 +41,7 @@ def add_website(name: str, desc: str, url: str) -> bool:
         return False
 
 
-popular_searches = [
-    "Paneer Butter Masala", "Chole Bhature", "Rajma Chawal", "Palak Paneer", "Aloo Paratha",
-    "Baingan Bharta", "Bhindi Masala", "Kadhi Pakora", "Dum Aloo", "Malai Kofta",
-    "Aloo Gobi", "Matar Paneer", "Vegetable Biryani", "Jeera Aloo", "Tawa Pulao",
-    "Kaju Curry", "Pav Bhaji", "Vada Pav", "Misal Pav", "Sabudana Khichdi",
-    "Khichdi", "Sambar", "Rasam", "Upma", "Poha", "Medu Vada", "Idli", "Dosa",
-    "Masala Dosa", "Onion Uttapam", "Bisi Bele Bath", "Ragi Mudde", "Avial",
-    "Thepla", "Handvo", "Dhokla", "Khandvi", "Undhiyu", "Dal Dhokli", "Sev Tameta nu Shaak",
-    "Sarson da Saag", "Makki di Roti", "Chana Masala", "Vegetable Korma", "Navratan Korma",
-    "Hara Bhara Kabab", "Moong Dal Chilla", "Litti Chokha", "Thalipeeth", "Zunka Bhakri",
-    "Gatte ki Sabzi", "Besan Chilla", "Lauki Kofta", "Pumpkin Curry", "Tinda Masala",
-    "Veg Pulao", "Paneer Tikka", "Tamatar ki Sabzi", "Methi Thepla", "Karela Fry",
-    "Paneer Bhurji", "Aloo Methi", "Kachori", "Moong Dal Khichdi", "Vegetable Cutlet",
-    "Batata Vada", "Dal Fry", "Dal Tadka", "Methi Malai Matar", "Chana Sundal",
-    "Arbi Masala", "Beetroot Poriyal", "Cabbage Thoran", "Beans Foogath", "Aloo Tamatar Curry",
-    "Baingan Fry", "Tomato Chutney", "Coconut Chutney", "Peanut Chutney", "Mooli Paratha",
-    "Hing Jeera Aloo", "Palak Rice", "Lemon Rice", "Curd Rice", "Tamarind Rice",
-    "Rava Dosa", "Set Dosa", "Appam", "Neer Dosa", "Vegetable Ishtu",
-    "Kozhambu", "Kootu", "Poriyal", "Bharwan Bhindi", "Bhutte ka Kees",
-    "Suran Fry", "Raw Banana Sabzi", "Kadala Curry", "Adai", "Kuzhi Paniyaram",
-    "Vegetable Stew", "Pesarattu", "Samosa", "Vegetable Momos", "Vegetable Maggi",
-    "Roti", "Naan", "Phulka", "Tandoori Roti", "Missi Roti", "Jowar Roti", "Bajra Roti",
-    "Poori", "Lucchi", "Chole Puri", "Aloo Puri", "Chana Dal", "Masoor Dal", "Toor Dal",
-    "Gujarati Kadhi", "Punjabi Kadhi", "Kashmiri Dum Aloo", "Khar", "Lauki Chana Dal",
-    "Patra", "Dabeli", "Veg Frankie", "Veg Sandwich", "Paneer Sandwich", "Tawa Sandwich",
-    "Veg Roll", "Rajma Tikki", "Dahi Puri", "Bhel Puri", "Sev Puri", "Ragda Pattice",
-    "Katori Chaat", "Papdi Chaat", "Aloo Chaat", "Sprouts Chaat", "Fruit Chaat",
-    "Kharabath", "Veg Pongal", "Kara Kozhambu", "Vangi Bath", "Tomato Bath",
-    "Masala Upma", "Vegetable Idiyappam", "Lapsi", "Kesari Bath", "Sweet Pongal",
-    "Sooji Halwa", "Atta Halwa", "Besan Halwa", "Carrot Halwa", "Lauki Halwa",
-    "Moong Dal Halwa", "Rava Kesari", "Badam Halwa", "Mysore Pak", "Kaju Katli",
-    "Rasgulla", "Sandesh", "Cham Cham", "Boondi Ladoo", "Besan Ladoo", "Motichoor Ladoo",
-    "Gulab Jamun", "Jalebi", "Imarti", "Balushahi", "Malpua", "Rabri", "Phirni",
-    "Kheer", "Rice Kheer", "Sabudana Kheer", "Vermicelli Kheer", "Moong Dal Payasam","Margherita Pizza", "Veggie Burger", "Grilled Cheese Sandwich", "Vegetable Stir Fry", "Tofu Curry",
-    "Falafel Wrap", "Hummus with Pita", "Veggie Tacos", "Caprese Salad", "Greek Salad",
-    "Stuffed Bell Peppers", "Tomato Basil Pasta", "Spinach Lasagna", "Vegetable Fried Rice", "Vegetarian Sushi",
-    "Tofu Scramble", "Eggplant Parmesan", "Minestrone Soup", "Butternut Squash Soup", "Zucchini Noodles",
-    "Ratatouille", "Chickpea Stew", "Mushroom Risotto", "Sweet Potato Fries", "Veggie Quesadilla",
-    "Avocado Toast", "Vegetable Spring Rolls", "Thai Green Curry", "Kimchi Fried Rice", "Baked Mac and Cheese",
-    "Bruschetta", "Vegetarian Chili", "Cauliflower Wings", "Stuffed Mushrooms", "Corn on the Cob",
-    "Quinoa Salad", "Black Bean Soup", "Zucchini Fritters", "Lentil Soup", "Roasted Veggie Bowl",
-    "Tofu Banh Mi", "Miso Soup", "Edamame", "Tempura Veggies", "Crispy Cauliflower Tacos",
-    "Vegan Ramen", "Egg Salad Sandwich", "Mozzarella Sticks", "Garlic Bread", "Broccoli Cheddar Soup",
-    "Fettuccine Alfredo", "Cheese Enchiladas", "Bulgur Salad", "Veggie Pho", "Shakshuka",
-    "Polenta with Mushrooms", "Vegan Shepherd’s Pie", "Stuffed Zucchini Boats", "Gnocchi with Pesto", "Cheese Fondue"
-]
-
+popular_searches = []
 
 def process_search(search: str, headers):
     print(f"Requesting Vyntr API for search: {search}")
