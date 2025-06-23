@@ -64,21 +64,81 @@ function TimerWidget({ seconds: initialSeconds }: { seconds: number }) {
     }
   }
 
-  function formatTime(s: number) {
-    const h = Math.floor(s / 3600)
-      .toString()
-      .padStart(2, "0");
-    const m = Math.floor((s % 3600) / 60)
-      .toString()
-      .padStart(2, "0");
-    const sec = (s % 60).toString().padStart(2, "0");
-    return `${h}:${m}:${sec}`;
+  function handleHoursChange(e: React.ChangeEvent<HTMLInputElement>) {
+    let val = parseInt(e.target.value, 10);
+    if (isNaN(val)) val = 0;
+    if (val < 0) val = 0;
+    if (val > 60) val = 60;
+    const m = Math.floor((secondsLeft % 3600) / 60);
+    const s = secondsLeft % 60;
+    setSecondsLeft(val * 3600 + m * 60 + s);
+    setRunning(false);
+    stopAlarm();
   }
+  function handleMinutesChange(e: React.ChangeEvent<HTMLInputElement>) {
+    let val = parseInt(e.target.value, 10);
+    if (isNaN(val)) val = 0;
+    if (val < 0) val = 0;
+    if (val > 60) val = 60;
+    const h = Math.floor(secondsLeft / 3600);
+    const s = secondsLeft % 60;
+    setSecondsLeft(h * 3600 + val * 60 + s);
+    setRunning(false);
+    stopAlarm();
+  }
+  function handleSecondsChange(e: React.ChangeEvent<HTMLInputElement>) {
+    let val = parseInt(e.target.value, 10);
+    if (isNaN(val)) val = 0;
+    if (val < 0) val = 0;
+    if (val > 60) val = 60;
+    const h = Math.floor(secondsLeft / 3600);
+    const m = Math.floor((secondsLeft % 3600) / 60);
+    setSecondsLeft(h * 3600 + m * 60 + val);
+    setRunning(false);
+    stopAlarm();
+  }
+
+  const hours = Math.floor(secondsLeft / 3600);
+  const minutes = Math.floor((secondsLeft % 3600) / 60);
+  const seconds = secondsLeft % 60;
 
   return (
     <div className="min-w-96 w-full h-full min-h-60 flex items-center justify-center flex-col bg-background p-4 mb-4 rounded-lg shadow-accent border-accent border-[0.1px] shadow-md">
       <h3 className="text-xl font-semibold mb-2 text-center">Timer</h3>
-      <div className="text-5xl font-mono mb-4">{formatTime(secondsLeft)}</div>
+      <div className="flex gap-2 mb-4 items-center">
+        <input
+          type="number"
+          min={0}
+          max={60}
+          value={hours}
+          onChange={handleHoursChange}
+          disabled={running}
+          className="w-16 text-3xl font-mono text-center border p-2 aspect-square rounded"
+          aria-label="Hours"
+        />
+        <span className="text-3xl font-mono">:</span>
+        <input
+          type="number"
+          min={0}
+          max={60}
+          value={minutes}
+          onChange={handleMinutesChange}
+          disabled={running}
+          className="w-16 text-3xl font-mono text-center border p-2 aspect-square rounded"
+          aria-label="Minutes"
+        />
+        <span className="text-3xl font-mono">:</span>
+        <input
+          type="number"
+          min={0}
+          max={60}
+          value={seconds}
+          onChange={handleSecondsChange}
+          disabled={running}
+          className="w-16 text-3xl font-mono text-center border p-2 aspect-square rounded"
+          aria-label="Seconds"
+        />
+      </div>
       <div className="flex gap-2">
         <Button
           onClick={() => setRunning((r) => !r)}
@@ -98,7 +158,7 @@ function TimerWidget({ seconds: initialSeconds }: { seconds: number }) {
       </div>
       {secondsLeft === 0 && (
         <div className="mt-4 text-red-500 font-bold animate-bounce">
-          Time's up!
+          Time&apos;s up!
         </div>
       )}
     </div>

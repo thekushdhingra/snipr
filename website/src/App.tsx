@@ -5,10 +5,11 @@ import { FaGlobe, FaSearch } from "react-icons/fa";
 import { DarkModeSwitch } from "react-toggle-dark-mode";
 import { TimerWidget, parseTimerQuery } from "./components/utils/timer";
 import WordMeaningCard from "./components/utils/word";
-import { isCurrencyConversion, getSuggestions } from "./searchUtils";
+import { isCurrencyConversion } from "./searchUtils";
 
 import CurrencyCard from "./components/utils/currency";
 import ScientificCalculator from "./components/utils/calculator";
+import Stopwatch from "./components/utils/stopwatch";
 
 type SearchResult = {
   id: number;
@@ -23,8 +24,6 @@ function App() {
   const [searchingText, setSearchingText] = useState("Searching...");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const timerSeconds = parseTimerQuery(searchQuery);
@@ -51,24 +50,6 @@ function App() {
   };
 
   useEffect(() => {
-    let ignore = false;
-    if (searchQuery.trim() === "") {
-      setSuggestions([]);
-      setShowSuggestions(false);
-      return;
-    }
-    getSuggestions(searchQuery).then((sugs) => {
-      if (!ignore) {
-        setSuggestions(sugs || []);
-        setShowSuggestions((sugs && sugs.length > 0) || false);
-      }
-    });
-    return () => {
-      ignore = true;
-    };
-  }, [searchQuery]);
-
-  useEffect(() => {
     const stored = localStorage.getItem("darkMode");
     if (stored === "true") {
       setDarkMode(true);
@@ -91,20 +72,6 @@ function App() {
       localStorage.setItem("darkMode", "false");
     }
   }, [darkMode]);
-
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (inputRef.current && !inputRef.current.contains(e.target as Node)) {
-        setShowSuggestions(false);
-      }
-    }
-    if (showSuggestions) {
-      document.addEventListener("mousedown", handleClick);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClick);
-    };
-  }, [showSuggestions]);
 
   return (
     <div className="flex min-h-screen w-screen flex-col items-center justify-center">
@@ -135,7 +102,7 @@ function App() {
       </h1>
       {!searching && <em className="mb-8">The Modern Search Engine</em>}
       <div
-        className="flex w-3/4 md:w-1/2 items-center justify-between rounded-lg p-4 shadow-accent border-accent border-[0.1px] shadow-2xl flex-row z-50 bg-background relative"
+        className="flex w-3/4 md:w-1/2 items-center justify-between rounded-lg p-4 shadow-accent border-accent border shadow-2xl flex-row z-50 bg-background relative"
         style={{
           position: searching ? "fixed" : "static",
           top: searching ? "3rem" : "auto",
@@ -150,72 +117,20 @@ function App() {
             value={searchQuery}
             onChange={(e) => {
               setSearchQuery(e.target.value);
-              setShowSuggestions(true);
-            }}
-            onFocus={() => {
-              if (suggestions.length > 0) setShowSuggestions(true);
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && searchQuery.trim() !== "") {
                 search();
-                setShowSuggestions(false);
-              }
-              if (e.key === "ArrowDown" && suggestions.length > 0) {
-                const el = document.getElementById("suggestion-0");
-                if (el) (el as HTMLElement).focus();
               }
             }}
             id="search-input"
             placeholder="Type something..."
             autoComplete="off"
           />
-          {showSuggestions && suggestions.length > 0 && (
-            <ul className="absolute left-0 right-0 mt-1 bg-background border border-accent rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
-              {suggestions.map((s, i) => (
-                <li
-                  key={i}
-                  id={`suggestion-${i}`}
-                  tabIndex={0}
-                  className="px-4 py-2 cursor-pointer hover:bg-accent"
-                  onMouseDown={() => {
-                    setSearchQuery(s);
-                    setShowSuggestions(false);
-                    search(s);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      setSearchQuery(s);
-                      setShowSuggestions(false);
-                      search(s);
-                    }
-                    if (e.key === "ArrowDown") {
-                      const next = document.getElementById(
-                        `suggestion-${i + 1}`
-                      );
-                      if (next) (next as HTMLElement).focus();
-                    }
-                    if (e.key === "ArrowUp") {
-                      if (i === 0) {
-                        inputRef.current?.focus();
-                      } else {
-                        const prev = document.getElementById(
-                          `suggestion-${i - 1}`
-                        );
-                        if (prev) (prev as HTMLElement).focus();
-                      }
-                    }
-                  }}
-                >
-                  {s}
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
         <Button
           onClick={() => {
             search();
-            setShowSuggestions(false);
           }}
           id="search-button"
         >
@@ -223,9 +138,14 @@ function App() {
         </Button>
       </div>
       <div className="pt-24">
-        {searching && searchQuery && timerSeconds !== null && (
-          <TimerWidget seconds={timerSeconds} />
-        )}
+        {searching &&
+          searchQuery &&
+          searchQuery.toLowerCase().includes("timer") && (
+            <TimerWidget seconds={timerSeconds || 1} />
+          )}
+        {searching &&
+          searchQuery &&
+          searchQuery.toLowerCase().includes("stopwatch") && <Stopwatch />}
         {searching && searchQuery && (
           <>
             <CurrencyCard sText={setSearchingText} searchQuery={searchQuery} />
