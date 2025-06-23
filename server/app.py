@@ -1,9 +1,11 @@
 from supabase import create_client
 from typing import List, Dict
-from fastapi import FastAPI, Query, HTTPException
+from io import BytesIO
+from fastapi import FastAPI, Query, HTTPException, Response
 from fastapi.responses import JSONResponse
 import os
 from dotenv import load_dotenv
+from gtts import gTTS
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
 
@@ -147,3 +149,14 @@ def suggest(
         return get_autocomplete_suggestions(q, limit)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/tts")
+def speak(text: str = Query(None, description="Text to convert to speech")):
+    if not text or not text.strip():
+        raise HTTPException(status_code=400, detail="Text parameter is required.")
+    tts = gTTS(text, lang='en')
+    mp3_fp = BytesIO()
+    tts.write_to_fp(mp3_fp)
+    mp3_fp.seek(0)
+    return Response(content=mp3_fp.read(), media_type="audio/mpeg")
