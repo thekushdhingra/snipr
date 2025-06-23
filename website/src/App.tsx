@@ -10,6 +10,7 @@ import { isCurrencyConversion } from "./searchUtils";
 import CurrencyCard from "./components/utils/currency";
 import ScientificCalculator from "./components/utils/calculator";
 import Stopwatch from "./components/utils/stopwatch";
+import Translate from "./components/utils/translate";
 
 type SearchResult = {
   id: number;
@@ -146,13 +147,21 @@ function App() {
         {searching &&
           searchQuery &&
           searchQuery.toLowerCase().includes("stopwatch") && <Stopwatch />}
-        {searching && searchQuery && (
-          <>
-            <CurrencyCard sText={setSearchingText} searchQuery={searchQuery} />
-            <ScientificCalculator searchQuery={searchQuery} />
-            <WordMeaningCard searchQuery={searchQuery} />
-          </>
-        )}
+        {searching &&
+          searchQuery &&
+          !searchQuery.toLowerCase().includes("translate") && (
+            <>
+              <CurrencyCard
+                sText={setSearchingText}
+                searchQuery={searchQuery}
+              />
+              <ScientificCalculator searchQuery={searchQuery} />
+              <WordMeaningCard searchQuery={searchQuery} />
+            </>
+          )}
+        {searching &&
+          searchQuery &&
+          searchQuery.toLowerCase().includes("translate") && <Translate />}
         {searching &&
           searchQuery &&
           searchResults.length === 0 &&

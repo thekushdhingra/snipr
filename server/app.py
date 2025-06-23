@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 import os
 from dotenv import load_dotenv
 from gtts import gTTS
+from deep_translator import GoogleTranslator
 from fastapi.middleware.cors import CORSMiddleware
 import httpx
 
@@ -160,3 +161,13 @@ def speak(text: str = Query(None, description="Text to convert to speech")):
     tts.write_to_fp(mp3_fp)
     mp3_fp.seek(0)
     return Response(content=mp3_fp.read(), media_type="audio/mpeg")
+
+
+
+@app.get("/api/translate")
+def translate(text: str = Query(...), to: str = Query(...), _from: str = Query("auto")):
+    try:
+        translated = GoogleTranslator(source=_from, target=to).translate(text)
+        return JSONResponse(content={"translated": translated})
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
