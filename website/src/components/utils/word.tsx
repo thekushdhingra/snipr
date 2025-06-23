@@ -1,5 +1,6 @@
 import { getMeanings } from "@/searchUtils";
 import { useEffect, useState } from "react";
+import TTS from "./tts";
 
 function WordMeaningCard({ searchQuery }: { searchQuery: string }) {
   const [meanings, setMeanings] = useState<string[] | null>(null);
@@ -18,25 +19,44 @@ function WordMeaningCard({ searchQuery }: { searchQuery: string }) {
   useEffect(() => {
     const fetchMeanings = async () => {
       const cleaned = cleanQuery(searchQuery);
-      setMeanings(await getMeanings(cleaned));
+      const result = await getMeanings(cleaned);
+      setMeanings(Array.isArray(result) ? result : []);
     };
     fetchMeanings();
   }, [searchQuery]);
 
-  return (
-    meanings &&
-    meanings.length > 0 && (
+  const cleanedWord = cleanQuery(searchQuery);
+
+  if (!meanings || meanings.length === 0) {
+    // No meanings found, only show TTS for the original sentence
+    return (
       <div className="min-w-96 w-full h-full min-h-60 flex items-center justify-center flex-col bg-background p-4 mb-4 rounded-lg shadow-accent border-accent border-[0.1px] shadow-md">
-        <h3 className="text-xl font-semibold mb-2 text-center">Word Meaning</h3>
-        <ul id="word-meanings">
-          {meanings.map((meaning, index) => (
-            <li key={index} className="text-gray-700 dark:text-gray-300 mb-1">
-              {meaning}
-            </li>
-          ))}
-        </ul>
+        <div className="flex flex-col items-center justify-center mb-2">
+          <h1 className="text-2xl font-bold mb-4">Text to Speech</h1>
+          <div className="flex flex-row items-center justify-center">
+            <TTS text={searchQuery} />
+            <span className="ml-2 font-medium text-lg">{searchQuery}</span>
+          </div>
+        </div>
       </div>
-    )
+    );
+  }
+
+  return (
+    <div className="min-w-96 w-full h-full min-h-60 flex items-center justify-center flex-col bg-background p-4 mb-4 rounded-lg shadow-accent border-accent border-[0.1px] shadow-md">
+      <h3 className="text-xl font-semibold mb-2 text-center">Word Meaning</h3>
+      <div className="flex items-center justify-center mb-2">
+        <TTS text={cleanedWord} />
+        <span className="ml-2 font-medium text-lg">{cleanedWord}</span>
+      </div>
+      <ul id="word-meanings">
+        {(meanings ?? []).map((meaning, index) => (
+          <li key={index} className="text-gray-700 dark:text-gray-300 mb-1">
+            {meaning}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 
