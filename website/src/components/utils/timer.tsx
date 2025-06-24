@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
-function parseTimerQuery(query: string): number | null {
+function parseTimerQuery(query?: string): number | null {
+  if (!query || typeof query !== "string") return null;
+
   const match = query
     .toLowerCase()
     .match(/(\d+)\s*(hour|hr|h|min(?:ute)?|sec(?:ond)?|s)?\s*timer/);
@@ -110,7 +112,7 @@ function TimerWidget({ seconds: initialSeconds }: { seconds: number }) {
           type="number"
           min={0}
           max={60}
-          value={hours}
+          value={hours ?? 0}
           onChange={handleHoursChange}
           disabled={running}
           className="w-16 text-3xl font-mono text-center border p-2 aspect-square rounded"
@@ -121,7 +123,7 @@ function TimerWidget({ seconds: initialSeconds }: { seconds: number }) {
           type="number"
           min={0}
           max={60}
-          value={minutes}
+          value={minutes ?? 0}
           onChange={handleMinutesChange}
           disabled={running}
           className="w-16 text-3xl font-mono text-center border p-2 aspect-square rounded"
@@ -132,7 +134,7 @@ function TimerWidget({ seconds: initialSeconds }: { seconds: number }) {
           type="number"
           min={0}
           max={60}
-          value={seconds}
+          value={seconds ?? 0}
           onChange={handleSecondsChange}
           disabled={running}
           className="w-16 text-3xl font-mono text-center border p-2 aspect-square rounded"

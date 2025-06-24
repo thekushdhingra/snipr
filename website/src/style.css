@@ -2,6 +2,8 @@
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
 
+
+
 #search-input {
   border-top-right-radius: 0 !important;
   border-bottom-right-radius: 0 !important;
@@ -50,7 +52,7 @@ ul {
   margin: 0;
 }
 
-  #word-meanings li::before {
+#word-meanings li::before {
   content: "★";
   color: var(--color-accent-foreground);
   margin-right: 0.5em;

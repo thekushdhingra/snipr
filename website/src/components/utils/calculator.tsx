@@ -110,7 +110,7 @@ export const ScientificCalculator: React.FC<{ searchQuery: string }> = ({
     >
       <h4 className="text-3xl font-bold mb-4">Calculator</h4>
       <Input
-        value={expression}
+        value={expression ?? "0"}
         onChange={handleInputChange}
         onKeyDown={handleInputKeyDown}
         style={{ marginBottom: 16, fontSize: 20, textAlign: "right" }}

@@ -91,7 +91,7 @@ function CurrencyCard({
           <Input
             className="flex-1 bg-transparent outline-none"
             type="number"
-            value={fromValue}
+            value={fromValue ?? 0}
             onChange={(e) => {
               setIsUpdatingFrom(true);
               setFromValue(e.target.value);
@@ -104,7 +104,7 @@ function CurrencyCard({
           <Input
             className="flex-1 bg-transparent outline-none"
             type="number"
-            value={toValue}
+            value={toValue ?? 0}
             onChange={(e) => {
               setIsUpdatingFrom(false);
               setToValue(e.target.value);

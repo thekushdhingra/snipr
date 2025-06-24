@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
 import { Input } from "./components/ui/input";
-import { FaGlobe, FaSearch } from "react-icons/fa";
+import { FaGlobe, FaMicrophone, FaSearch } from "react-icons/fa";
 import { DarkModeSwitch } from "react-toggle-dark-mode";
 import { TimerWidget, parseTimerQuery } from "./components/utils/timer";
 import WordMeaningCard from "./components/utils/word";
@@ -11,6 +11,7 @@ import CurrencyCard from "./components/utils/currency";
 import ScientificCalculator from "./components/utils/calculator";
 import Stopwatch from "./components/utils/stopwatch";
 import Translate from "./components/utils/translate";
+import VoskSTT from "./components/utils/stt";
 
 type SearchResult = {
   id: number;
@@ -19,8 +20,25 @@ type SearchResult = {
   url: string;
 };
 
+function isFirefoxOrChromeOnPC(): boolean {
+  const ua = navigator.userAgent;
+
+  const isPC = !/Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(ua);
+  const isChrome =
+    /Chrome/.test(ua) && !/Edg|OPR|Brave|YaBrowser|SamsungBrowser/i.test(ua);
+  const isFirefox = /Firefox/.test(ua);
+  const isSafari = /Safari/.test(ua) && !/Chrome|Chromium|Android/i.test(ua);
+  const isEdge = /Edg|Edge/.test(ua);
+  const isNokiaOrMS = /Nokia|MSIE|Trident/.test(ua);
+
+  return (
+    isPC && (isChrome || isFirefox) && !isSafari && !isEdge && !isNokiaOrMS
+  );
+}
+
 function App() {
   const [darkMode, setDarkMode] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const [searching, setSearching] = useState(false);
   const [searchingText, setSearchingText] = useState("Searching...");
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,7 +67,6 @@ function App() {
       console.error("Fetch error:", error);
     }
   };
-
   useEffect(() => {
     const stored = localStorage.getItem("darkMode");
     if (stored === "true") {
@@ -64,6 +81,7 @@ function App() {
       }
     }
   }, []);
+
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add("dark");
@@ -112,10 +130,10 @@ function App() {
         }}
         id="search-bar"
       >
-        <div className="w-full relative">
+        <div className="w-full relative flex flex-row">
           <Input
             ref={inputRef}
-            value={searchQuery}
+            value={searchQuery ?? ""}
             onChange={(e) => {
               setSearchQuery(e.target.value);
             }}
@@ -128,6 +146,16 @@ function App() {
             placeholder="Type something..."
             autoComplete="off"
           />
+          {isFirefoxOrChromeOnPC() && (
+            <button
+              onClick={() => {
+                setIsListening(!isListening);
+              }}
+              className="absolute right-1 top-1/2 -translate-y-1/2 p-4 cursor-pointer z-[100]"
+            >
+              <FaMicrophone />
+            </button>
+          )}
         </div>
         <Button
           onClick={() => {
@@ -138,12 +166,24 @@ function App() {
           <FaSearch />
         </Button>
       </div>
+
       <div className="pt-24">
         {searching &&
           searchQuery &&
           searchQuery.toLowerCase().includes("timer") && (
             <TimerWidget seconds={timerSeconds || 1} />
           )}
+        {isListening && (
+          <div className="fixed bottom-4 right-4 z-50">
+            <VoskSTT
+              setListening={setIsListening}
+              listening={isListening}
+              setText={(text: string) =>
+                setSearchQuery((prev) => (prev ? prev + " " + text : text))
+              }
+            />
+          </div>
+        )}
         {searching &&
           searchQuery &&
           searchQuery.toLowerCase().includes("stopwatch") && <Stopwatch />}
