@@ -10,6 +10,13 @@ Visit https://snipr.kushs.dev
 - Full-text search capabilities
 - RESTful API
 - Modern web interface
+- Timer and stopwatch
+- Scientific calculator
+- Currency conversion
+- Word meaning lookup
+- Translation
+- Text to speech
+- Speech to text
 
 ## Special Thanks
 
