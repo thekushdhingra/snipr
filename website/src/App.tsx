@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, useRef } from "react";
 import { Input } from "./components/ui/input";
-import { FaGlobe, FaMicrophone, FaSearch } from "react-icons/fa";
+import { FaGlobe, FaSearch } from "react-icons/fa";
 import { DarkModeSwitch } from "react-toggle-dark-mode";
 import { TimerWidget, parseTimerQuery } from "./components/utils/timer";
 import WordMeaningCard from "./components/utils/word";
@@ -18,22 +18,6 @@ type SearchResult = {
   description: string;
   url: string;
 };
-
-function isFirefoxOrChromeOnPC(): boolean {
-  const ua = navigator.userAgent;
-
-  const isPC = !/Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(ua);
-  const isChrome =
-    /Chrome/.test(ua) && !/Edg|OPR|Brave|YaBrowser|SamsungBrowser/i.test(ua);
-  const isFirefox = /Firefox/.test(ua);
-  const isSafari = /Safari/.test(ua) && !/Chrome|Chromium|Android/i.test(ua);
-  const isEdge = /Edg|Edge/.test(ua);
-  const isNokiaOrMS = /Nokia|MSIE|Trident/.test(ua);
-
-  return (
-    isPC && (isChrome || isFirefox) && !isSafari && !isEdge && !isNokiaOrMS
-  );
-}
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
