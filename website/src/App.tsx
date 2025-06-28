@@ -11,7 +11,6 @@ import CurrencyCard from "./components/utils/currency";
 import ScientificCalculator from "./components/utils/calculator";
 import Stopwatch from "./components/utils/stopwatch";
 import Translate from "./components/utils/translate";
-import VoskSTT from "./components/utils/stt";
 
 type SearchResult = {
   id: number;
@@ -38,7 +37,6 @@ function isFirefoxOrChromeOnPC(): boolean {
 
 function App() {
   const [darkMode, setDarkMode] = useState(false);
-  const [isListening, setIsListening] = useState(false);
   const [searching, setSearching] = useState(false);
   const [searchingText, setSearchingText] = useState("Searching...");
   const [searchQuery, setSearchQuery] = useState("");
@@ -130,33 +128,22 @@ function App() {
         }}
         id="search-bar"
       >
-        <div className="w-full relative flex flex-row">
-          <Input
-            ref={inputRef}
-            value={searchQuery ?? ""}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && searchQuery.trim() !== "") {
-                search();
-              }
-            }}
-            id="search-input"
-            placeholder="Type something..."
-            autoComplete="off"
-          />
-          {isFirefoxOrChromeOnPC() && (
-            <button
-              onClick={() => {
-                setIsListening(!isListening);
-              }}
-              className="absolute right-1 top-1/2 -translate-y-1/2 p-4 cursor-pointer z-[100]"
-            >
-              <FaMicrophone />
-            </button>
-          )}
-        </div>
+        <Input
+          ref={inputRef}
+          value={searchQuery ?? ""}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && searchQuery.trim() !== "") {
+              search();
+            }
+          }}
+          id="search-input"
+          placeholder="Type something..."
+          autoComplete="off"
+        />
+
         <Button
           onClick={() => {
             search();
@@ -173,17 +160,6 @@ function App() {
           searchQuery.toLowerCase().includes("timer") && (
             <TimerWidget seconds={timerSeconds || 1} />
           )}
-        {isListening && (
-          <div className="fixed bottom-4 right-4 z-50">
-            <VoskSTT
-              setListening={setIsListening}
-              listening={isListening}
-              setText={(text: string) =>
-                setSearchQuery((prev) => (prev ? prev + " " + text : text))
-              }
-            />
-          </div>
-        )}
         {searching &&
           searchQuery &&
           searchQuery.toLowerCase().includes("stopwatch") && <Stopwatch />}
