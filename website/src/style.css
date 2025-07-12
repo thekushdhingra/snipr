@@ -196,3 +196,29 @@ h1,
     @apply bg-background text-foreground;
   }
 }
+
+@media (prefers-color-scheme: dark) {
+  .infobox a {
+    color: #006eff;
+  }
+}
+
+.infobox-image {
+  background-color: #fff !important;
+}
+
+.infobox-image span {
+  display: block;
+  width: fit-content;
+  height: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.infobox-above.summary {
+  font-size: 2rem;
+}
+
+.infobox a {
+  color: var(--color-blue-600);
+}

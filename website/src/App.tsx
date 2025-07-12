@@ -11,6 +11,7 @@ import CurrencyCard from "./components/utils/currency";
 import ScientificCalculator from "./components/utils/calculator";
 import Stopwatch from "./components/utils/stopwatch";
 import Translate from "./components/utils/translate";
+import Infobox from "./components/utils/infobox";
 
 type SearchResult = {
   id: number;
@@ -148,26 +149,29 @@ function App() {
         </div>
 
         <div className="pt-24">
-          {searching &&
-            searchQuery &&
-            searchQuery.toLowerCase().includes("timer") && (
-              <TimerWidget seconds={timerSeconds || 1} />
-            )}
-          {searching &&
-            searchQuery &&
-            searchQuery.toLowerCase().includes("stopwatch") && <Stopwatch />}
-          {searching &&
-            searchQuery &&
-            !searchQuery.toLowerCase().includes("translate") && (
-              <>
-                <CurrencyCard
-                  sText={setSearchingText}
-                  searchQuery={searchQuery}
-                />
-                <ScientificCalculator searchQuery={searchQuery} />
-                <WordMeaningCard searchQuery={searchQuery} />
-              </>
-            )}
+          <div className="flex flex-row flex-wrap items-center justify-center">
+            {searching &&
+              searchQuery &&
+              searchQuery.toLowerCase().includes("timer") && (
+                <TimerWidget seconds={timerSeconds || 1} />
+              )}
+            {searching &&
+              searchQuery &&
+              searchQuery.toLowerCase().includes("stopwatch") && <Stopwatch />}
+            {searching &&
+              searchQuery &&
+              !searchQuery.toLowerCase().includes("translate") && (
+                <>
+                  <CurrencyCard
+                    sText={setSearchingText}
+                    searchQuery={searchQuery}
+                  />
+                  <ScientificCalculator searchQuery={searchQuery} />
+                  <WordMeaningCard searchQuery={searchQuery} />
+                  <Infobox query={searchQuery} />
+                </>
+              )}
+          </div>
           {searching &&
             searchQuery &&
             searchQuery.toLowerCase().includes("translate") && <Translate />}
