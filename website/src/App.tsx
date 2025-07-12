@@ -148,8 +148,8 @@ function App() {
           </Button>
         </div>
 
-        <div className="pt-24">
-          <div className="flex flex-row flex-wrap items-center justify-center">
+        <div className="pt-24 w-screen">
+          <div className="flex flex-col flex-wrap items-center justify-center gap-4">
             {searching &&
               searchQuery &&
               searchQuery.toLowerCase().includes("timer") && (
@@ -180,11 +180,13 @@ function App() {
             searchResults.length === 0 &&
             !isCurrencyConversion(searchingText) &&
             timerSeconds === null && (
-              <div className="text-gray-500 text-center">{searchingText}</div>
+              <div className="text-gray-500 flex items-center justify-center my-12">
+                {searchingText}
+              </div>
             )}
           {searchQuery && searchResults.length > 0 && (
             <div className="mt-20">
-              <h2 className="px-3 mt-4 text-2xl font-bold mb-4">
+              <h2 className="px-3 mt-4 text-2xl font-bold mb-4 flex items-center justify-center">
                 We found the following results:
               </h2>
               <div className="w-full flex flex-col items-center">
@@ -193,11 +195,11 @@ function App() {
                     key={result.id}
                     className="w-full max-w-2xl p-4 mb-4 rounded-lg-[0.1px] bg-[#ffffff30] dark:bg-[#00000030] backdrop-blur-3xl rounded-2xl"
                   >
-                    <p className="text-md text-gray-500 dark:text-gray-400 flex flex-row items-center gap-2">
-                      <FaGlobe />{" "}
-                      {result.url.length > 70
-                        ? result.url.slice(0, 70) + "..."
-                        : result.url}
+                    <p className="text-md text-gray-500 dark:text-gray-400 flex flex-row items-center gap-2 overflow-hidden">
+                      <FaGlobe />
+                      <span className="truncate max-w-[90vw] whitespace-nowrap overflow-hidden text-ellipsis">
+                        {result.url}
+                      </span>
                     </p>
                     <h3 className="text-xl font-semibold mb-2">
                       <a

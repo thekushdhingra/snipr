@@ -7,8 +7,31 @@ type InfoboxProps = {
   query: string;
 };
 
+type InfoboxData = Record<string, string | string[]>;
+
+const isLink = (val: string) => {
+  return (
+    val.startsWith("http") || val.startsWith("/") || /^[\w-]+\.\w{2,}/.test(val)
+  );
+};
+
+const formatDate = (val: string) => {
+  const [datePart, timeAgoPart] = val.split(/\s*\(/);
+  const cleanDate = datePart.trim();
+  const relative = timeAgoPart?.replace(/\)$/, "").trim();
+
+  return (
+    <div className="flex flex-col">
+      <span>{cleanDate}</span>
+      {relative && (
+        <span className="text-xs text-muted-foreground ml-1">({relative})</span>
+      )}
+    </div>
+  );
+};
+
 export default function Infobox({ query }: InfoboxProps) {
-  const [html, setHtml] = useState<string | null>(null);
+  const [data, setData] = useState<InfoboxData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -23,36 +46,15 @@ export default function Infobox({ query }: InfoboxProps) {
             query
           )}`
         );
+
         if (!res.ok) throw new Error("Infobox not found");
 
-        const htmlText = await res.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(htmlText, "text/html");
-
-        const anchors = doc.querySelectorAll("a");
-        anchors.forEach((a) => {
-          const href = a.getAttribute("href") || "";
-          const text = a.textContent || "";
-
-          const isInternal =
-            href.startsWith("/") ||
-            href.startsWith("#") ||
-            href.startsWith("javascript:") ||
-            !href.startsWith("http");
-
-          if (isInternal) {
-            const span = document.createElement("span");
-            span.textContent = text;
-            a.replaceWith(span);
-          }
-        });
-
-        setHtml(doc.body.innerHTML);
-        console.log(html);
+        const json = await res.json();
+        setData(json);
         setError(null);
       } catch (err) {
         setError((err as Error).message || "Failed to load infobox");
-        setHtml(null);
+        setData(null);
       } finally {
         setLoading(false);
       }
@@ -73,16 +75,79 @@ export default function Infobox({ query }: InfoboxProps) {
     );
   }
 
+  if (!data) return null;
+
+  const { Title: rawTitle, Image: rawImage, ...rest } = data;
+  const Title = Array.isArray(rawTitle) ? rawTitle[0] : rawTitle;
+  const Image = Array.isArray(rawImage) ? rawImage[0] : rawImage;
+
+  const renderValue = (val: string) => {
+    if (/\d{4}/.test(val) && /\([^)]+\)/.test(val)) {
+      return formatDate(val);
+    }
+
+    if (isLink(val)) {
+      let href = val.startsWith("http")
+        ? val
+        : val.startsWith("/")
+        ? `https://neopedia.kushs.dev${val}`
+        : `https://${val}`;
+
+      return (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 dark:text-blue-400 hover:underline break-words"
+        >
+          {val}
+        </a>
+      );
+    }
+
+    return <span>{val}</span>;
+  };
+
   return (
-    html && (
-      <Card className="max-w-md h-fit bg-[#ffffff30] dark:bg-[#00000030] backdrop-blur-3xl rounded-lg p-4">
-        <CardContent>
-          <div
-            className="prose dark:prose-invert max-w-none"
-            dangerouslySetInnerHTML={{ __html: html! }}
-          />
-        </CardContent>
-      </Card>
-    )
+    <Card className="max-w-md bg-[#ffffff30] dark:bg-[#00000030] backdrop-blur-3xl rounded-2xl p-4 shadow-md">
+      <CardContent className="space-y-4 flex flex-col">
+        {Title && (
+          <h2 className="text-2xl font-bold text-center text-primary">
+            {Title}
+          </h2>
+        )}
+
+        {Image && (
+          <div className="flex justify-center bg-white">
+            <img
+              src={Image}
+              alt={Title ?? "Infobox image"}
+              className="w-28 h-28 object-contain rounded-md border"
+            />
+          </div>
+        )}
+
+        <div className="space-y-2 text-md">
+          {Object.entries(rest).map(([key, value]) => (
+            <div key={key} className="flex flex-row gap-2">
+              <span className="font-medium text-muted-foreground w-1/3">
+                {key}:
+              </span>
+              <div className="w-2/3">
+                {Array.isArray(value) ? (
+                  <ul className="list-disc list-inside">
+                    {value.map((item, i) => (
+                      <li key={i}>{renderValue(item)}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  renderValue(value)
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

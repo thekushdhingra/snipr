@@ -102,7 +102,6 @@ export const ScientificCalculator: React.FC<{ searchQuery: string }> = ({
     <div
       style={{
         maxWidth: isMobile ? 360 : 600,
-        margin: "0 auto",
         padding: 16,
         borderRadius: 8,
       }}
