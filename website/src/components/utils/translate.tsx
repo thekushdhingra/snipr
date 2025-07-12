@@ -197,17 +197,20 @@ export function Translate() {
   };
 
   return (
-    <div className="space-y-4 max-w-md mx-auto border p-4 rounded">
+    <div className="space-y-4 max-w-md mx-auto p-4 rounded bg-[#ffffff30] dark:bg-[#00000030] backdrop-blur-3xl">
       <div className="flex gap-2">
         <div className="flex-1">
           <label className="block mb-1 text-sm font-medium">From</label>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full">
+              <Button
+                variant="outline"
+                className="w-full bg-[#ffffff30] dark:bg-[#00000030] backdrop-blur-3xl border-0"
+              >
                 {getLanguageName(from)}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="max-h-64 overflow-y-auto w-56">
+            <DropdownMenuContent className="max-h-64 overflow-y-auto w-56 bg-[#ffffff30] dark:bg-[#00000030] backdrop-blur-3xl">
               <DropdownMenuLabel>Select Language</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuRadioGroup value={from} onValueChange={setFrom}>
@@ -225,11 +228,14 @@ export function Translate() {
           <label className="block mb-1 text-sm font-medium">To</label>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="w-full">
+              <Button
+                variant="outline"
+                className="w-full bg-[#ffffff30] dark:bg-[#00000030] backdrop-blur-3xl border-0"
+              >
                 {getLanguageName(to)}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="max-h-64 overflow-y-auto w-56">
+            <DropdownMenuContent className="max-h-64 overflow-y-auto w-56 bg-[#ffffff30] dark:bg-[#00000030] backdrop-blur-3xl">
               <DropdownMenuLabel>Select Language</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuRadioGroup value={to} onValueChange={setTo}>
@@ -246,6 +252,7 @@ export function Translate() {
       <Input
         placeholder="Enter text to translate"
         value={text}
+        className="border-0 bg-[#ffffff30] dark:bg-[#00000030] backdrop-blur-3xl"
         onChange={(e) => setText(e.target.value)}
       />
       <Button
@@ -256,7 +263,7 @@ export function Translate() {
         {loading ? "Translating..." : "Translate"}
       </Button>
       {result && (
-        <div className="flex flex-row items-center justify-center border rounded p-3 bg-muted text-sm">
+        <div className="flex flex-row items-center justify-center bg-[#ffffff30] dark:bg-[#00000030] backdrop-blur-3xl rounded p-3 text-sm">
           <TTS text={result} />
           {result}
         </div>

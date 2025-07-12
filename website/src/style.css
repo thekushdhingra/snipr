@@ -18,12 +18,8 @@
 
 #search-bar {
   transition: transform 0.2s ease-in-out;
-  box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
 }
 
-.dark #search-bar {
-  box-shadow: 0 2px 8px 0 oklch(0.2 0 0 / 60%), 0 1.5px 4px 0 oklch(0.2 0 0 / 40%);
-}
 
 #search-bar:has(#search-input:focus) {
   transform: translateY(-5px);

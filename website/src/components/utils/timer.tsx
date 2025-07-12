@@ -105,7 +105,7 @@ function TimerWidget({ seconds: initialSeconds }: { seconds: number }) {
   const seconds = secondsLeft % 60;
 
   return (
-    <div className="min-w-96 w-full h-full min-h-60 flex items-center justify-center flex-col bg-background p-4 mb-4 rounded-lg shadow-accent border-accent border-[0.1px] shadow-md">
+    <div className="min-w-96 w-full h-full min-h-60 flex items-center justify-center flex-col bg-background p-4 mb-4 rounded-lg border-accent border-[0.1px]">
       <h3 className="text-xl font-semibold mb-2 text-center">Timer</h3>
       <div className="flex gap-2 mb-4 items-center">
         <input

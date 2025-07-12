@@ -81,7 +81,7 @@ function CurrencyCard({
   if (!fromSymbol || !toSymbol) return null;
 
   return (
-    <div className="min-w-96 w-full h-full min-h-60 flex items-center justify-center flex-col bg-background p-4 mb-4 rounded-lg shadow-accent border-accent border-[0.1px] shadow-md">
+    <div className="min-w-96 w-full h-full min-h-60 flex items-center justify-center flex-col bg-[#ffffff30] dark:bg-[#00000030] backdrop-blur-3xl p-4 mb-4 rounded-lg border-accent border-[0.1px]">
       <h3 className="text-xl font-semibold mb-2 text-center">
         Currency Conversion
       </h3>

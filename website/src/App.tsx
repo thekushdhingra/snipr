@@ -75,139 +75,149 @@ function App() {
   }, [darkMode]);
 
   return (
-    <div className="flex min-h-screen w-screen flex-col items-center justify-center">
-      <div className="fixed top-8 right-8 font-sans scale-150 z-[60]">
-        <DarkModeSwitch
-          checked={darkMode}
-          onChange={(checked: boolean) => {
-            if (checked) {
-              setDarkMode(true);
-            } else {
-              setDarkMode(false);
-            }
-          }}
-        />
-      </div>
-      <h1
-        className="font-bold top-4 left-4 cursor-pointer"
-        id={searching ? "searching-logo" : "logo"}
-        onClick={() => {
-          window.location.href = "/";
-        }}
-        style={{
-          fontSize: searching ? "2rem" : "8rem",
-          position: searching ? "fixed" : "static",
-        }}
-      >
-        Snipr
-      </h1>
-      {!searching && <em className="mb-8">The Modern Search Engine</em>}
-      <div
-        className="flex w-3/4 md:w-1/2 items-center justify-between rounded-lg p-4 shadow-accent border-accent border shadow-2xl flex-row z-50 bg-background relative"
-        style={{
-          position: searching ? "fixed" : "static",
-          top: searching ? "3rem" : "auto",
-          left: searching ? "50%" : "auto",
-          transform: searching ? "translate(-50%, -50%)" : "none",
-        }}
-        id="search-bar"
-      >
-        <Input
-          ref={inputRef}
-          value={searchQuery ?? ""}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && searchQuery.trim() !== "") {
-              search();
-            }
-          }}
-          id="search-input"
-          placeholder="Type something..."
-          autoComplete="off"
-        />
-
-        <Button
+    <>
+      <video
+        src="/bg.mp4"
+        autoPlay
+        loop
+        muted
+        className="fixed top-0 left-0 w-screen h-screen object-cover -z-1"
+      ></video>
+      <div className="flex min-h-screen w-screen flex-col items-center justify-center bg-[#ffffff99] dark:bg-[#00000099] backdrop-blur-3xl">
+        <div className="fixed top-8 right-8 font-sans scale-150 z-[60]">
+          <DarkModeSwitch
+            checked={darkMode}
+            onChange={(checked: boolean) => {
+              if (checked) {
+                setDarkMode(true);
+              } else {
+                setDarkMode(false);
+              }
+            }}
+          />
+        </div>
+        <h1
+          className="font-bold top-4 left-4 cursor-pointer"
+          id={searching ? "searching-logo" : "logo"}
           onClick={() => {
-            search();
+            window.location.href = "/";
           }}
-          id="search-button"
+          style={{
+            fontSize: searching ? "2rem" : "8rem",
+            position: searching ? "fixed" : "static",
+          }}
         >
-          <FaSearch />
-        </Button>
-      </div>
+          Snipr
+        </h1>
+        {!searching && <em className="mb-8">The Modern Search Engine</em>}
+        <div
+          className="flex w-3/4 md:w-1/2 items-center justify-between rounded-lg p-4 flex-row z-50 relative bg-[#ffffff50] dark:bg-[#00000050] backdrop-blur-3xl"
+          style={{
+            position: searching ? "fixed" : "static",
+            top: searching ? "3rem" : "auto",
+            left: searching ? "50%" : "auto",
+            transform: searching ? "translate(-50%, -50%)" : "none",
+          }}
+          id="search-bar"
+        >
+          <Input
+            ref={inputRef}
+            value={searchQuery ?? ""}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && searchQuery.trim() !== "") {
+                search();
+              }
+            }}
+            id="search-input"
+            placeholder="Type something..."
+            className="border-0 dark:bg-auto bg-[#00000009]"
+            autoComplete="off"
+          />
 
-      <div className="pt-24">
-        {searching &&
-          searchQuery &&
-          searchQuery.toLowerCase().includes("timer") && (
-            <TimerWidget seconds={timerSeconds || 1} />
-          )}
-        {searching &&
-          searchQuery &&
-          searchQuery.toLowerCase().includes("stopwatch") && <Stopwatch />}
-        {searching &&
-          searchQuery &&
-          !searchQuery.toLowerCase().includes("translate") && (
-            <>
-              <CurrencyCard
-                sText={setSearchingText}
-                searchQuery={searchQuery}
-              />
-              <ScientificCalculator searchQuery={searchQuery} />
-              <WordMeaningCard searchQuery={searchQuery} />
-            </>
-          )}
-        {searching &&
-          searchQuery &&
-          searchQuery.toLowerCase().includes("translate") && <Translate />}
-        {searching &&
-          searchQuery &&
-          searchResults.length === 0 &&
-          !isCurrencyConversion(searchingText) &&
-          timerSeconds === null && (
-            <div className="text-gray-500 text-center">{searchingText}</div>
-          )}
-        {searchQuery && searchResults.length > 0 && (
-          <div className="mt-20">
-            <h2 className="px-3 mt-4 text-2xl font-bold mb-4">
-              We found the following results:
-            </h2>
-            <div className="w-full flex flex-col items-center">
-              {searchResults.map((result) => (
-                <div
-                  key={result.id}
-                  className="w-full max-w-2xl bg-background p-4 mb-4 rounded-lg shadow-accent border-accent border-[0.1px] shadow-md"
-                >
-                  <p className="text-md text-gray-500 dark:text-gray-400 flex flex-row items-center gap-2">
-                    <FaGlobe />{" "}
-                    {result.url.length > 70
-                      ? result.url.slice(0, 70) + "..."
-                      : result.url}
-                  </p>
-                  <h3 className="text-xl font-semibold mb-2">
-                    <a
-                      href={result.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 dark:text-[#006eff] hover:underline"
-                    >
-                      {result.name}
-                    </a>
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300">
-                    {result.description.length > 100
-                      ? result.description.slice(0, 100) + "..."
-                      : result.description}
-                  </p>
-                </div>
-              ))}
+          <Button
+            onClick={() => {
+              search();
+            }}
+            id="search-button"
+          >
+            <FaSearch />
+          </Button>
+        </div>
+
+        <div className="pt-24">
+          {searching &&
+            searchQuery &&
+            searchQuery.toLowerCase().includes("timer") && (
+              <TimerWidget seconds={timerSeconds || 1} />
+            )}
+          {searching &&
+            searchQuery &&
+            searchQuery.toLowerCase().includes("stopwatch") && <Stopwatch />}
+          {searching &&
+            searchQuery &&
+            !searchQuery.toLowerCase().includes("translate") && (
+              <>
+                <CurrencyCard
+                  sText={setSearchingText}
+                  searchQuery={searchQuery}
+                />
+                <ScientificCalculator searchQuery={searchQuery} />
+                <WordMeaningCard searchQuery={searchQuery} />
+              </>
+            )}
+          {searching &&
+            searchQuery &&
+            searchQuery.toLowerCase().includes("translate") && <Translate />}
+          {searching &&
+            searchQuery &&
+            searchResults.length === 0 &&
+            !isCurrencyConversion(searchingText) &&
+            timerSeconds === null && (
+              <div className="text-gray-500 text-center">{searchingText}</div>
+            )}
+          {searchQuery && searchResults.length > 0 && (
+            <div className="mt-20">
+              <h2 className="px-3 mt-4 text-2xl font-bold mb-4">
+                We found the following results:
+              </h2>
+              <div className="w-full flex flex-col items-center">
+                {searchResults.map((result) => (
+                  <div
+                    key={result.id}
+                    className="w-full max-w-2xl p-4 mb-4 rounded-lg-[0.1px] bg-[#ffffff30] dark:bg-[#00000030] backdrop-blur-3xl rounded-2xl"
+                  >
+                    <p className="text-md text-gray-500 dark:text-gray-400 flex flex-row items-center gap-2">
+                      <FaGlobe />{" "}
+                      {result.url.length > 70
+                        ? result.url.slice(0, 70) + "..."
+                        : result.url}
+                    </p>
+                    <h3 className="text-xl font-semibold mb-2">
+                      <a
+                        href={result.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 dark:text-[#006eff] hover:underline"
+                      >
+                        {result.name}
+                      </a>
+                    </h3>
+                    <p className="text-gray-700 dark:text-gray-300">
+                      {result.description.length > 100
+                        ? result.description.slice(0, 100) + "..."
+                        : result.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

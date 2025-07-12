@@ -28,9 +28,8 @@ function WordMeaningCard({ searchQuery }: { searchQuery: string }) {
   const cleanedWord = cleanQuery(searchQuery);
 
   if (!meanings || meanings.length === 0) {
-    // No meanings found, only show TTS for the original sentence
     return (
-      <div className="min-w-96 w-full h-full min-h-60 flex items-center justify-center flex-col bg-background p-4 mb-4 rounded-lg shadow-accent border-accent border-[0.1px] shadow-md">
+      <div className="min-w-96 w-full h-full min-h-60 flex items-center justify-center flex-col bg-[#ffffff30] dark:bg-[#00000030] backdrop-blur-3xl p-4 mb-4 rounded-lg ">
         <div className="flex flex-col items-center justify-center mb-2">
           <h1 className="text-2xl font-bold mb-4">Text to Speech</h1>
           <div className="flex flex-row items-center justify-center">
@@ -43,7 +42,7 @@ function WordMeaningCard({ searchQuery }: { searchQuery: string }) {
   }
 
   return (
-    <div className="min-w-96 w-full h-full min-h-60 flex items-center justify-center flex-col bg-background p-4 mb-4 rounded-lg shadow-accent border-accent border-[0.1px] shadow-md">
+    <div className="min-w-96 w-full h-full min-h-60 flex items-center justify-center flex-col bg-[#ffffff30] dark:bg-[#00000030] backdrop-blur-3xl p-4 mb-4 rounded-lg ">
       <h3 className="text-xl font-semibold mb-2 text-center">Word Meaning</h3>
       <div className="flex items-center justify-center mb-2">
         <TTS text={cleanedWord} />

@@ -106,7 +106,7 @@ export const ScientificCalculator: React.FC<{ searchQuery: string }> = ({
         padding: 16,
         borderRadius: 8,
       }}
-      className="rounded-2xl p-4 border-accent border-[2px]"
+      className="rounded-2xl p-4 border-accent border-[2px] bg-[#ffffff30] dark:bg-[#00000030] backdrop-blur-3xl"
     >
       <h4 className="text-3xl font-bold mb-4">Calculator</h4>
       <Input
