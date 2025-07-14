@@ -1,6 +1,6 @@
 # Snipr
 
-![Time from Wakatime](https://hackatime-badge.hackclub.com/U0804SUGQRG/snipr)
+Time Spent working on this: ![Time from Wakatime](https://hackatime-badge.hackclub.com/U0804SUGQRG/snipr)
 
 
 Snipr is a search engine built with Python and TypeScript.
