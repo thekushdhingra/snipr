@@ -2,6 +2,9 @@
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
 
+* {
+  overflow-x: hidden;
+}
 
 
 #search-input {
